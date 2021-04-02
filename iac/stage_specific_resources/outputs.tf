@@ -17,3 +17,7 @@ output "alb_dns_name" {
 output "alb_secure_listener_arn" {
   value = aws_alb_listener.secure_http.arn
 }
+
+output "alb_zone_id" {
+  value = aws_alb.simple_vm.zone_id
+}
