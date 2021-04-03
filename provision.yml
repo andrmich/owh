@@ -1,157 +1,36 @@
-- hosts: localhost
-  connection: local
-  gather_facts: false
-
-  vars_files:
-  - group_vars/all/vars.yaml
-  - group_vars/all/vault.yaml
-
-  pre_tasks:
-
-  - fail:
-      msg: "This play requires 'appenv'"
-    when: appenv is not defined
-    tags:
-      - always
-
-  - name: check if directory for appenv exists
-    #stat: path="group_vars/{{ appenv }}"
-    stat:
-      path: "group_vars/{{ appenv }}"
-    register: appenv_path
-    tags:
-      - always
-
-  - fail:
-      msg: "path for appenv does not exist: group_vars/{{ appenv }}"
-    when: not appenv_path.stat.exists
-    tags:
-      - always
-
-  - include_vars:
-      dir: "group_vars/{{ appenv }}"
-    when: appenv_path.stat.exists
-    tags:
-      - always
-
-  - fail:
-      msg: "This play requires 'stage'"
-    when: stage is not defined
-    tags:
-      - always
-
-  - name: "check if ssh private key file exists: {{application}}.pem"
-    stat:
-      path: "./{{application}}.pem"
-    register: ssh_private_key_file
-    tags:
-      - always
-
-  - fail:
-      msg: "ssh private key file not found: ./{{application}}.pem - run ./key.sh"
-    when: not ssh_private_key_file.stat.exists
-    tags:
-      - always
-
-  
-
-  # roles:
-  # - role: assert
-
-  tasks:
-  - name: Add instance to host group
-    add_host:
-      name: "{{ prometheus_dnsname_instance }}"
-      groups: "prometheusgroup"
-      ansible_ssh_private_key_file: "./{{application}}.pem"
-    tags:
-      - always
-
-  - name: make sure tmp dir exists
-    file:
-      state: directory
-      path: tmp
-    tags:
-      - always
-
-  - name: create a file with URLs
-    template:
-      src: urls.j2
-      dest: tmp/urls-{{ appenv }}
-    tags:
-      - always
-      - urls
+---
 
 
-- hosts: prometheusgroup
+- hosts: task_Web
   become: true
   gather_facts: true
+  remote_user: ubuntu
+
   vars_files:
-  - group_vars/all/vars.yaml
-  - group_vars/all/vault.yaml
-  - group_vars/{{ appenv }}/vars.yaml
-  - group_vars/{{ appenv }}/vault.yaml
+  - vars/vars.yaml
+  - vars/vault.yaml
+#  tasks:
+#    - name: say hello
+#      echo:
+#        data: "aaaaaaaa"
   roles:
   - role: dist_upgrade
     tags:
       - linux
       - dist_upgrade
-    when: dist_upgrade|default(false)|bool == true
-  - role: tsc-ansible/roles/security
+  - role: security
     tags:
       - linux
       - security
-  - role: setup_nvme_links
+  - role: geerlingguy.ntp
     tags:
       - time
-  - role: mount_ec2_volume
-    tags:
-      - linux
-  - role: roles/install_docker
+  - role: roles/geerlingguy.docker
     tags:
       - docker
-  - role: roles/install_blackbox_exporter
+  - role: roles/fine_tune_docker
     tags:
-      - blackbox_exporter
-    when: enable_blackbox_exporter|bool
-  - role: roles/install_cloudwatch_exporter
-    tags:
-      - cloudwatch_exporter
-    when: enable_cloudwatch_exporter|bool
-  - role: roles/install_ssh_exporter
-    tags:
-      - ssh_exporter
-    when: enable_ssh_exporter|bool
-  - role: roles/install_alertmanager
-    tags:
-      - alertmanager
-    when: enable_alertmanager|bool
-  - role: roles/install_prometheus
-    tags:
-      - prometheus
-    when: enable_prometheus|bool
-  - role: roles/install_grafana
-    tags:
-      - grafana
-    when: enable_grafana|bool
+      - docker
   - role: roles/install_nginx
     tags:
       - nginx
-    when: enable_grafana|bool
-  - role: roles/install_aws_certificate_watcher
-    tags:
-      - cert_watcher
-    when: enable_aws_certificate_watcher|bool
-  - role: roles/install_prom2teams
-    tags:
-      - prom2teams
-  - role: roles/update_prom_config
-    tags:
-      - update_prom_conf
-  - role: roles/update_alertmanager_config
-    tags:
-      - update_alertmanager
-  - role: roles/install_pushgateway
-    tags:
-      - pushgateway
-  # - setup_backup

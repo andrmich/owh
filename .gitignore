@@ -4,3 +4,4 @@
 *.tfvars
 
 simple_vm.pem.pub
+geerlingguy.*

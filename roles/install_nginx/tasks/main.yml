@@ -1,12 +1,10 @@
-#
-# we have a files/default directory and optionally
-#           files/appenv
-#
+- name: Include task list in play
+  include_tasks: fine_tune_docker.yml
+
 - name: check if directory for appenv exists
   stat: path="{{ role_path }}/files/{{ appenv }}"
   register: appenv_files
 
-# nginx.conf
 
 - name: make sure "{{ ebs_mount }}/nginx/config" does exist
   file:
@@ -16,15 +14,8 @@
 
 - name: copy nginx config file to remote host from appenv dir
   copy:
-    src: "{{ appenv }}/nginx.conf"
+    src: "nginx.conf"
     dest: "{{ ebs_mount }}/nginx/config/nginx.conf"
-  when: appenv_files.stat.exists
-
-- name: copy nginx config file to remote host from default dir
-  copy:
-    src: "default/nginx.conf"
-    dest: "{{ ebs_mount }}/nginx/config/nginx.conf"
-  when: not appenv_files.stat.exists
 
 # index.html
 
@@ -34,21 +25,15 @@
     state: directory
     recurse: yes
 
-- name: copy index.html to remote host from appenv dir
-  copy:
-    src: "{{ appenv }}/index.html"
-    dest: "{{ ebs_mount }}/nginx/testdata/index.html"
-  when: appenv_files.stat.exists
-
 - name: copy index.html to remote host from default dir
   copy:
-    src: "default/index.html"
+    src: "index.html"
     dest: "{{ ebs_mount }}/nginx/testdata/index.html"
-  when: not appenv_files.stat.exists
+
 
 # container
 
-- name: create an nginx container and join the prometheus network
+- name: create an nginx container and join the network
   docker_container:
     name: nginx
     image: "nginx:{{ nginx_version }}"
@@ -58,7 +43,7 @@
     networks:
       - name: "{{ internal_network }}"
     ports:
-      - "4000:80"
+      - "4000:8080"
     volumes:
       - "{{ ebs_mount }}/nginx/config/nginx.conf:/etc/nginx/nginx.conf"
       - "{{ ebs_mount }}/nginx/testdata:/usr/share/nginx/html"
