@@ -1,6 +1,4 @@
 ---
-
-
 - hosts: task_Web
   become: true
   gather_facts: true
@@ -9,10 +7,7 @@
   vars_files:
   - vars/vars.yaml
   - vars/vault.yaml
-#  tasks:
-#    - name: say hello
-#      echo:
-#        data: "aaaaaaaa"
+
   roles:
   - role: dist_upgrade
     tags:

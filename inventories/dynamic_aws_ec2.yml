@@ -19,6 +19,4 @@ compose:
   ansible_host: private_ip_address
   ansible_user: "'ubuntu'"
   ansible_ssh_private_key_file: "'~/.ssh/simple_vm'"
-  ansible_ssh_common_args: "'-o IdentitiesOnly=yes'" # -o ProxyCommand=\"ssh -W %h:%p -q ubuntu@18.159.98.239\"'"
-  epel_repo_url: "'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'"
-  epel_repo_gpg_key_url: "'/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'"
+  ansible_ssh_common_args: "'-o IdentitiesOnly=yes'"
