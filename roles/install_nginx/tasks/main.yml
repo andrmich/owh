@@ -1,0 +1,49 @@
+- name: Include task list in play
+  include_tasks: fine_tune_docker.yml
+
+- name: check if directory for appenv exists
+  stat: path="{{ role_path }}/files/{{ appenv }}"
+  register: appenv_files
+
+
+- name: make sure "{{ ebs_mount }}/nginx/config" does exist
+  file:
+    path: "{{ ebs_mount }}/nginx/config/"
+    state: directory
+    recurse: yes
+
+- name: copy nginx config file to remote host from appenv dir
+  copy:
+    src: "nginx.conf"
+    dest: "{{ ebs_mount }}/nginx/config/nginx.conf"
+
+# index.html
+
+- name: make sure "{{ ebs_mount }}/nginx/testdata" does exist
+  file:
+    path: "{{ ebs_mount }}/nginx/testdata/"
+    state: directory
+    recurse: yes
+
+- name: copy index.html to remote host from default dir
+  copy:
+    src: "index.html"
+    dest: "{{ ebs_mount }}/nginx/testdata/index.html"
+
+
+# container
+
+- name: create an nginx container and join the network
+  docker_container:
+    name: nginx
+    image: "nginx:{{ nginx_version }}"
+    recreate: yes
+    state: started
+    restart_policy: "always"
+    networks:
+      - name: "{{ internal_network }}"
+    ports:
+      - "4000:8080"
+    volumes:
+      - "{{ ebs_mount }}/nginx/config/nginx.conf:/etc/nginx/nginx.conf"
+      - "{{ ebs_mount }}/nginx/testdata:/usr/share/nginx/html"

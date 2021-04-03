@@ -1,0 +1,36 @@
+---
+
+
+- hosts: task_Web
+  become: true
+  gather_facts: true
+  remote_user: ubuntu
+
+  vars_files:
+  - vars/vars.yaml
+  - vars/vault.yaml
+#  tasks:
+#    - name: say hello
+#      echo:
+#        data: "aaaaaaaa"
+  roles:
+  - role: dist_upgrade
+    tags:
+      - linux
+      - dist_upgrade
+  - role: security
+    tags:
+      - linux
+      - security
+  - role: geerlingguy.ntp
+    tags:
+      - time
+  - role: roles/geerlingguy.docker
+    tags:
+      - docker
+  - role: roles/fine_tune_docker
+    tags:
+      - docker
+  - role: roles/install_nginx
+    tags:
+      - nginx
