@@ -35,7 +35,7 @@ variable "tags" {
   description = "Tags to apply to resources created by VPC module"
   type        = map(string)
   default = {
-    Topic = "simple_vm"
+    Topic = "simple-vm"
     Environment = "np"
     ResourceMsanagedBy = "terraform"
     Contact           = "ma@mismail.xyz"

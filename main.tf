@@ -106,14 +106,11 @@ resource "aws_alb_target_group" "nginx" {
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    matcher             = "200,302,301"
+    matcher             = "200,302"
   }
   tags = var.tags
-
-  lifecycle {
-    ignore_changes = [tags["initiatedBy"]]
-  }
 }
+
 resource "aws_alb_target_group_attachment" "nginx" {
   target_group_arn = aws_alb_target_group.nginx.arn
   target_id = aws_instance.simple_vm.id

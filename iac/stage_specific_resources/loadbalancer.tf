@@ -1,8 +1,3 @@
-
-data "aws_subnet_ids" "all" {
-  vpc_id = module.vpc.vpc_id
-}
-
 data "terraform_remote_state" "zone" {
   backend = "s3"
   config = {
@@ -27,7 +22,7 @@ module "acm" {
 }
 
 resource "aws_security_group" "alb_sg" {
-  name =  "simple-vm-sg"
+  name =  "${var.tags.Topic}-sg"
   description = "ALB Security Group"
   vpc_id      = module.vpc.vpc_id
 
@@ -53,7 +48,7 @@ resource "aws_security_group" "alb_sg" {
 }
 
 resource "aws_alb" "simple_vm" {
-  name               = "simple-vm"
+  name               = var.tags.Topic
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
