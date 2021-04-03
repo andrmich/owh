@@ -3,4 +3,4 @@
 *.tfstate
 *.tfvars
 
-simple-vm.pem.pub
+simple_vm.pem.pub

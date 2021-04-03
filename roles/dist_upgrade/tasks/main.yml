@@ -1,0 +1,11 @@
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+    update_cache: yes
+  when: dist_upgrade|default(false)|bool == true
+
+- name: Reboot machine
+  reboot:
+    reboot_timeout: 600
+  when: dist_upgrade|default(false)|bool == true
+

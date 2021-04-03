@@ -7,6 +7,7 @@ output "access_from_bastion_sg_id" {
   value       = concat(module.access_from_bastion_sg.*.this_security_group_id, [""])[0]
 }
 
+
 output "alb_sg_id" {
   value = aws_security_group.alb_sg.id
 }

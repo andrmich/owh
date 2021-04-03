@@ -1,0 +1,64 @@
+#
+# we have a files/default directory and optionally
+#           files/appenv
+#
+- name: check if directory for appenv exists
+  stat: path="{{ role_path }}/files/{{ appenv }}"
+  register: appenv_files
+
+# nginx.conf
+
+- name: make sure "{{ ebs_mount }}/nginx/config" does exist
+  file:
+    path: "{{ ebs_mount }}/nginx/config/"
+    state: directory
+    recurse: yes
+
+- name: copy nginx config file to remote host from appenv dir
+  copy:
+    src: "{{ appenv }}/nginx.conf"
+    dest: "{{ ebs_mount }}/nginx/config/nginx.conf"
+  when: appenv_files.stat.exists
+
+- name: copy nginx config file to remote host from default dir
+  copy:
+    src: "default/nginx.conf"
+    dest: "{{ ebs_mount }}/nginx/config/nginx.conf"
+  when: not appenv_files.stat.exists
+
+# index.html
+
+- name: make sure "{{ ebs_mount }}/nginx/testdata" does exist
+  file:
+    path: "{{ ebs_mount }}/nginx/testdata/"
+    state: directory
+    recurse: yes
+
+- name: copy index.html to remote host from appenv dir
+  copy:
+    src: "{{ appenv }}/index.html"
+    dest: "{{ ebs_mount }}/nginx/testdata/index.html"
+  when: appenv_files.stat.exists
+
+- name: copy index.html to remote host from default dir
+  copy:
+    src: "default/index.html"
+    dest: "{{ ebs_mount }}/nginx/testdata/index.html"
+  when: not appenv_files.stat.exists
+
+# container
+
+- name: create an nginx container and join the prometheus network
+  docker_container:
+    name: nginx
+    image: "nginx:{{ nginx_version }}"
+    recreate: yes
+    state: started
+    restart_policy: "always"
+    networks:
+      - name: "{{ internal_network }}"
+    ports:
+      - "4000:80"
+    volumes:
+      - "{{ ebs_mount }}/nginx/config/nginx.conf:/etc/nginx/nginx.conf"
+      - "{{ ebs_mount }}/nginx/testdata:/usr/share/nginx/html"

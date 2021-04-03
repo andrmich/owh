@@ -1,0 +1,45 @@
+
+#--------------------------------------------------------------------------------------
+# tcp timestamp responses
+# 
+# disable tcp timestamp responses in sysctl.conf as this is considered as a security issue
+#
+#--------------------------------------------------------------------------------------
+
+
+# 
+# Ansible's sysctl module runs into errors - therefore we use lineinfile and command
+#
+# do NOT reload: this will fail if ipv4.tcp_timestamps had not been present in the 
+# sysctl file because then no corresponding file in /proc exists:
+# "sysctl: cannot stat /proc/sys/ipv4/tcp_timestamps: No such file or directory"
+# to solve this we execute a sysctl -w
+# - sysctl:
+#     name: ipv4.tcp_timestamps
+#     value: 0
+#     sysctl_set: yes
+#     state: present
+#     reload: no
+
+
+- name: disable tcp timestamp responses in sysctl.conf
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^ipv4.tcp_timestamps'
+    line: ipv4.tcp_timestamps=0
+
+- name: disable tcp timestamp responses in the running system
+  command: sysctl -w net.ipv4.tcp_timestamps=0
+
+- name: check active setting for net.ipv4.tcp_timestamps
+  command: sysctl net.ipv4.tcp_timestamps
+  register: tcp_timestamps
+
+- name: display the result net.ipv4.tcp_timestamps
+  debug:
+    var: tcp_timestamps.stdout_lines
+
+
+#--------------------------------------------------------------------------------------
+# <next security setting here>
+#--------------------------------------------------------------------------------------
