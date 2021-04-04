@@ -1,6 +1,3 @@
-- name: Include task list in play
-  include_tasks: fine_tune_docker.yml
-
 - name: check if directory for appenv exists
   stat: path="{{ role_path }}/files/{{ appenv }}"
   register: appenv_files
