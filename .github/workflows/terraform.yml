@@ -101,12 +101,22 @@ jobs:
       - name: Create a file from secret
         run:  echo ${{ secrets.KEY_PRIV }} | base64 -d > key
 
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
       - name: Install roles
         run: ansible-galaxy install -r requirements.yml
 
       - name: Install boto
         run: pip install boto3
 
+      - name: list roles
+        run: ansible all --list-hosts
       - name: Run ansible playbook
         run: |
           ansible-playbook -i inventories/dynamic_aws_ec1.yml provision.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key key
