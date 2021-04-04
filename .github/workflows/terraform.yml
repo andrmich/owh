@@ -108,4 +108,4 @@ jobs:
 
       - name: Run ansible playbook
         run: |
-          ansible-playbook -i inventories/dynamic_aws_ec2.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key key provision.yml
+           ansible-playbook -i inventories/dynamic_aws_ec2.yml --ssh-extra-args "-o ProxyCommand=\"ssh -i key -o IdentitiesOnly=yes -W %h:%p -q ubuntu@$IP_PUB\"" --private-key key provision.yml
