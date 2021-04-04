@@ -99,8 +99,10 @@ jobs:
            echo "IP_PUB=$(aws ec2 describe-instances --filters 'Name=tag:Instance,Values=Bastion' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $GITHUB_ENV
 
       - name: Create a file from secret
-        run: |
-             echo ${{ secrets.KEY_PRIV }} | base64 -d > key
+        run:  echo ${{ secrets.KEY_PRIV }} | base64 -d > key
+
+      - name: Install roles
+        run: ansible-galaxy install -r requirements.yml
 
       - name: Run ansible playbook
         run: |
