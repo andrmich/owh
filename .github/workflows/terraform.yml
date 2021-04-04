@@ -113,7 +113,7 @@ jobs:
         run: ansible-galaxy install -r requirements.yml
 
       - name: Install boto
-        run: pip install boto3
+        run: pip install boto3 botocore
 
       - name: list roles
         run: ansible all --list-hosts
