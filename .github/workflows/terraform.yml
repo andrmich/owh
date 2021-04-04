@@ -100,6 +100,9 @@ jobs:
       - name: Create a file from secret
         run:  echo ${{ secrets.KEY_PRIV }} | base64 -d > key
 
+      - name: Set key permissions
+        run: chmod 600 key
+
       - name: Install additional packages to ansibe pipx
         run: pipx inject ansible-base boto3
 
@@ -108,4 +111,4 @@ jobs:
 
       - name: Run ansible playbook
         run: |
-           ansible-playbook -i inventories/dynamic_aws_ec2.yml --ssh-extra-args "-vvv -o ProxyCommand=\"ssh -i key -o IdentitiesOnly=yes -W %h:%p -q ubuntu@$IP_PUB\"" --private-key key provision.yml -vvv
+           ansible-playbook -i inventories/dynamic_aws_ec2.yml --ssh-extra-args "-o ProxyCommand=\"ssh -i key -o IdentitiesOnly=yes -W %h:%p -q ubuntu@$IP_PUB\"" --private-key key provision.yml -vvv
