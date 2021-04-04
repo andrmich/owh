@@ -54,8 +54,7 @@ resource "aws_alb" "simple_vm" {
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = tolist(module.vpc.public_subnets)
 
-  enable_deletion_protection = true
-
+//  enable_deletion_protection = true
   tags = var.tags
 }
 
