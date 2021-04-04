@@ -100,7 +100,8 @@ jobs:
 
       - name: check if env valie created
         run: |
-          echo "${{ env.IP_PUB }}"
+          ansible-playbook -i inventories/dynamic_aws_ec1.yml provision.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key {{ secrest.KEY_PRIV }}
+
 
 
 
