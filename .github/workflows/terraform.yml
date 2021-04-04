@@ -84,7 +84,6 @@ jobs:
     needs: terraform-apply
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@master
 
@@ -93,13 +92,13 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          echo "IP_PUB=$(aws ec2 describe-instances --filter 'Name=tag:Instance,Values=Bastion' | grep PublicIpAddress | sed 's/[^0-9.]*//g')" >> $IP_PUB
+        with:
+          args: echo "IP_PUB=$(aws ec2 describe-instances --filter 'Name=tag:Instance,Values=Bastion' | grep PublicIpAddress | sed 's/[^0-9.]*//g')" >> $IP_PUB
 
       - name: check if env valie created
-        run: |
-          echo "${{ env.IP_PUB }}
 
+        run: |
+          echo "${{ env.IP_PUB }}"
 
 
 
