@@ -96,11 +96,15 @@ jobs:
 
       - name: Copy files to the test website with the AWS CLI
         run: |
-           echo "IP_PUB=$(aws ec2 describe-instances --filter 'Name=tag:Instance,Values=Bastion' | grep PublicIpAddress | sed 's/[^0-9.]*//g')" >> $GITHUB_ENV
+           echo "IP_PUB=$(aws ec2 describe-instances --filters 'Name=tag:Instance,Values=Bastion' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $GITHUB_ENV
+
+      - name: Create a file from secret
+        run: |
+             echo ${{ secrets.KEY_PRIV }} > key
 
       - name: Run ansible playbook
         run: |
-          ansible-playbook -i inventories/dynamic_aws_ec1.yml provision.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key ${{ secrets.KEY_PRIV }}
+          ansible-playbook -i inventories/dynamic_aws_ec1.yml provision.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key key
 
 
 
