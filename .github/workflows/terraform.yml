@@ -104,6 +104,9 @@ jobs:
       - name: Install roles
         run: ansible-galaxy install -r requirements.yml
 
+      - name: Install boto
+        run: pip install boto3
+
       - name: Run ansible playbook
         run: |
           ansible-playbook -i inventories/dynamic_aws_ec1.yml provision.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key key
