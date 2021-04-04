@@ -89,7 +89,7 @@ resource "aws_instance" "simple_vm" {
 
 resource "aws_key_pair" "simple_vm" {
   key_name   = var.tags.Topic
-  public_key = file("./simple_vm.pem.pub")
+  public_key = var.pub_key
 }
 
 

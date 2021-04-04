@@ -12,3 +12,5 @@ variable "tags" {
 variable "instance_type" {
   default = "t3.nano"
 }
+
+variable "pub_key" {}
