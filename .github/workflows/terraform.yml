@@ -10,7 +10,7 @@ jobs:
     name: Workflow
     runs-on: ubuntu-latest
     env:
-      TF_VAR_key: {{ secrets.KEY_PUB }}
+      TF_VAR_key: ${{ secrets.KEY_PUB }}
     steps:
 
     - name: Checkout Repository
