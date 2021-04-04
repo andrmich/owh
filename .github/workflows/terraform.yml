@@ -78,7 +78,43 @@ jobs:
         id: apply
         run: terraform apply -auto-approve
         continue-on-error: false
+  ansible:
+    name: ansible
+    needs: terraform-apply
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: unnecessary
+          if_key_exists: fail
 
+      - name: Checkout Repository
+        uses: actions/checkout@master
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+           echo "IP_PUB=$(aws ec2 describe-instances --filters 'Name=tag:Instance,Values=Bastion' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)" >> $GITHUB_ENV
+
+      - name: Add bastion to known hosts
+        run: ssh-keyscan -H $IP_PUB >> ~/.ssh/known_hosts
+
+      - name: Install additional packages to ansibe pipx
+        run: pipx inject ansible-base boto3
+
+      - name: Install roles
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Run ansible playbook
+        run: |
+           ansible-playbook -i inventories/dynamic_aws_ec2.yml --ssh-extra-args "-J ubuntu@$IP_PUB" provision.yml
 

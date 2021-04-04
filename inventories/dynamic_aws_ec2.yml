@@ -18,5 +18,4 @@ compose:
 ##  # The values below are jinja2 expressions, hence "'double quotation'" for static strings.
   ansible_host: private_ip_address
   ansible_user: "'ubuntu'"
-  ansible_ssh_private_key_file: "'~/.ssh/simple_vm'"
   ansible_ssh_common_args: "'-o IdentitiesOnly=yes'"
