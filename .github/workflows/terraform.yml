@@ -117,6 +117,11 @@ jobs:
 
       - name: list roles
         run: ansible all --list-hosts
+
+      - name: ansible version
+        run: ansible --version
+
+
       - name: Run ansible playbook
         run: |
           ansible-playbook -i inventories/dynamic_aws_ec1.yml provision.yml --ssh-common-args "-J ubuntu@$IP_PUB" --private-key key
