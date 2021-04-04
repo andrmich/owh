@@ -100,7 +100,7 @@ jobs:
 
       - name: Create a file from secret
         run: |
-             echo ${{ secrets.KEY_PRIV }} > key
+             echo ${{ secrets.KEY_PRIV }} | base64 -d > key
 
       - name: Run ansible playbook
         run: |
