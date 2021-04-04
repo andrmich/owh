@@ -7,21 +7,21 @@ terraform {
   }
 }
 
-data "terraform_remote_state" "stage_resources"  {
+data "terraform_remote_state" "stage_resources" {
   backend = "s3"
   config = {
-    bucket         = "aisim-tf-state"
-    key            = "stage-specific-vpc-bastion"
-    region         = "eu-central-1"
+    bucket = "aisim-tf-state"
+    key    = "stage-specific-vpc-bastion"
+    region = "eu-central-1"
   }
 }
 
 data "terraform_remote_state" "dns" {
   backend = "s3"
   config = {
-    bucket         = "aisim-tf-state"
-    key            = "DNS"
-    region         = "eu-central-1"
+    bucket = "aisim-tf-state"
+    key    = "DNS"
+    region = "eu-central-1"
   }
 }
 
@@ -31,25 +31,25 @@ resource "aws_security_group" "vm_sg" {
   vpc_id      = data.terraform_remote_state.stage_resources.outputs.vpc_id
 
   ingress {
-  # ingress rule for SSH communication
-  protocol    = "tcp"
-  from_port   = 22
-  to_port     = 22
-  cidr_blocks = tolist(data.terraform_remote_state.stage_resources.outputs.private_subnets_cidr_blocks)
+    # ingress rule for SSH communication
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
+    cidr_blocks = tolist(data.terraform_remote_state.stage_resources.outputs.private_subnets_cidr_blocks)
   }
   # nginx
   ingress {
     # ingress rule for HTTP communication
-    from_port = 4000
-    to_port = 4000
-    protocol = "tcp"
+    from_port       = 4000
+    to_port         = 4000
+    protocol        = "tcp"
     security_groups = [data.terraform_remote_state.stage_resources.outputs.alb_sg_id]
   }
   ingress {
     # allow echo / ping requests
-    from_port = 8
-    to_port = -1
-    protocol = "icmp"
+    from_port   = 8
+    to_port     = -1
+    protocol    = "icmp"
     cidr_blocks = ["10.0.0.0/16"]
   }
   egress {
@@ -78,18 +78,18 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_instance" "simple_vm" {
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
   subnet_id              = data.terraform_remote_state.stage_resources.outputs.private_subnets[0]
-  vpc_security_group_ids = [aws_security_group.vm_sg.id, data.terraform_remote_state.stage_resources.outputs.access_from_bastion_sg_id ]
+  vpc_security_group_ids = [aws_security_group.vm_sg.id, data.terraform_remote_state.stage_resources.outputs.access_from_bastion_sg_id]
   key_name               = aws_key_pair.simple_vm.key_name
-  tags = merge(var.tags, map("Instance", "Web"))
+  tags                   = merge(var.tags, map("Instance", "Web"))
 }
 
 
 resource "aws_key_pair" "simple_vm" {
   key_name   = var.tags.Topic
-  public_key = file("./simple_vm.pem.pub")
+  public_key = var.pub_key
 }
 
 
@@ -113,33 +113,33 @@ resource "aws_alb_target_group" "nginx" {
 
 resource "aws_alb_target_group_attachment" "nginx" {
   target_group_arn = aws_alb_target_group.nginx.arn
-  target_id = aws_instance.simple_vm.id
+  target_id        = aws_instance.simple_vm.id
 
 }
 
 resource "aws_alb_listener_rule" "nginx_rule" {
-  listener_arn  = data.terraform_remote_state.stage_resources.outputs.alb_secure_listener_arn
-  priority      = 122
+  listener_arn = data.terraform_remote_state.stage_resources.outputs.alb_secure_listener_arn
+  priority     = 122
   action {
     target_group_arn = aws_alb_target_group.nginx.arn
-    type = "forward"
+    type             = "forward"
   }
   condition {
     host_header {
-    values = ["simple-vm.*"]
-  }
+      values = ["simple-vm.*"]
+    }
   }
 }
 
 # simple-vm.shiny-infra.xyz
 resource "aws_route53_record" "simple_vm" {
   zone_id = data.terraform_remote_state.dns.outputs.route53_zone_id
-  name = "simple-vm.${data.terraform_remote_state.dns.outputs.zone_name}"
-  type = "A"
+  name    = "simple-vm.${data.terraform_remote_state.dns.outputs.zone_name}"
+  type    = "A"
 
   alias {
-    name = data.terraform_remote_state.stage_resources.outputs.alb_dns_name
-    zone_id =  data.terraform_remote_state.stage_resources.outputs.alb_zone_id
+    name                   = data.terraform_remote_state.stage_resources.outputs.alb_dns_name
+    zone_id                = data.terraform_remote_state.stage_resources.outputs.alb_zone_id
     evaluate_target_health = true
   }
 }
