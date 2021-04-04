@@ -121,6 +121,9 @@ jobs:
       - name: ansible version
         run: ansible --version
 
+      - name: python version
+        run: which python && which pip3
+
 
       - name: Run ansible playbook
         run: |
