@@ -1,15 +1,10 @@
-- name: check if directory for appenv exists
-  stat: path="{{ role_path }}/files/{{ appenv }}"
-  register: appenv_files
-
-
 - name: make sure "{{ ebs_mount }}/nginx/config" does exist
   file:
     path: "{{ ebs_mount }}/nginx/config/"
     state: directory
     recurse: yes
 
-- name: copy nginx config file to remote host from appenv dir
+- name: copy nginx config file to remote host
   copy:
     src: "nginx.conf"
     dest: "{{ ebs_mount }}/nginx/config/nginx.conf"
