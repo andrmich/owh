@@ -69,6 +69,11 @@ jobs:
         with:
           terraform_version: 0.14.9
 
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        continue-on-error: false
+
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
