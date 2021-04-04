@@ -96,7 +96,7 @@ jobs:
 
       - name: Copy files to the test website with the AWS CLI
         run: |
-           echo "IP_PUB=$(aws ec2 describe-instances --filter 'Name=tag:Instance,Values=Bastion' | grep PublicIpAddress | sed 's/[^0-9.]*//g')" >>  >> $GITHUB_ENV
+           echo "IP_PUB=$(aws ec2 describe-instances --filter 'Name=tag:Instance,Values=Bastion' | grep PublicIpAddress | sed 's/[^0-9.]*//g')" >> $GITHUB_ENV
 
       - name: check if env valie created
         run: |
