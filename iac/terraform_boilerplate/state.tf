@@ -8,10 +8,10 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket         = "aisim-tf-state"
-    key            = "terraform-boilerplate"
-    region         = "eu-central-1" # Bucket region, not deployment region
-    dynamodb_table = "terraform-state-locking"
-  }
-}
+//  backend "s3" {
+//    bucket         = "aisim-tf-state"
+//    key            = "terraform-boilerplate"
+//    region         = "eu-central-1" # Bucket region, not deployment region
+//    dynamodb_table = "terraform-state-locking"
+//  }
+//}

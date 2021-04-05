@@ -1,22 +1,31 @@
 ---
-- hosts: task_Web
+- name: security
+  hosts: all
+  become: true
+  gather_facts: true
+  remote_user: ubuntu
+  vars_files:
+    - vars/vars.yaml
+
+  roles:
+  - role: security
+    tags:
+      - linux
+      - security
+
+- name: provision web server
+  hosts: task_Web
   become: true
   gather_facts: true
   remote_user: ubuntu
 
   vars_files:
   - vars/vars.yaml
-  - vars/vault.yaml
-
   roles:
   - role: dist_upgrade
     tags:
       - linux
       - dist_upgrade
-  - role: security
-    tags:
-      - linux
-      - security
   - role: geerlingguy.ntp
     tags:
       - time
