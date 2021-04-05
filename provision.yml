@@ -6,7 +6,6 @@
 
   vars_files:
   - vars/vars.yaml
-  - vars/vault.yaml
 
   roles:
   - role: dist_upgrade
