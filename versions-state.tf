@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "eu-central-1"
+}
+
 terraform {
   required_version = "~> 0.14"
 
@@ -8,9 +12,10 @@ terraform {
     }
   }
 
+
   backend "s3" {
-    bucket         = "aisim-tf-state"
-    key            = "terraform-boilerplate"
+    bucket         = "aisim-tf-state" # <---- CHANGE HERE
+    key            = "simple_vm"
     region         = "eu-central-1" # Bucket region, not deployment region
     dynamodb_table = "terraform-state-locking"
   }

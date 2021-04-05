@@ -1,12 +1,3 @@
-terraform {
-  backend "s3" {
-    bucket         = "aisim-tf-state"
-    key            = "simple_vm"
-    region         = "eu-central-1" # Bucket region, not deployment region
-    dynamodb_table = "terraform-state-locking"
-  }
-}
-
 data "terraform_remote_state" "stage_resources" {
   backend = "s3"
   config = {
