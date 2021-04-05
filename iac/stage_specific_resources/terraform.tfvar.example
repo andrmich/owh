@@ -1,0 +1,20 @@
+bastion_ssh_key = "***"
+
+vpc_cidr  = "10.0.0.0/16"
+
+vpc_az_count = 2
+
+create_bastion = true
+
+bastion_ssh_key_name = "bastion-access"
+
+enable_s3_endpoint = false
+
+tags = {
+    Topic = "simple-vm"
+    Environment = "np"
+    ResourceMsanagedBy = "terraform"
+    Contact           = "ma@mismail.xyz"
+    Heritage          = "repo address"
+  }
+}

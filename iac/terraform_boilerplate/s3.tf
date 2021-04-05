@@ -5,9 +5,9 @@ provider "aws" {
 data "aws_caller_identity" "this" {}
 
 locals {
-  bucket_name = "aisim-tf-state" # Hardcoded in state.tf !
+  bucket_name = var.bucket_name
   users_with_state_access = [
-    "aisim",
+    var.user,
   ]
   user_arns_with_state_access = [
     for user in local.users_with_state_access :
@@ -56,14 +56,8 @@ resource "aws_s3_bucket" "tfstate" {
       }
     }
   }
-  tags = {
-    Name      = "S3 Remote Terraform State Store"
-    Environment = "np"
-    resourceManagedBy = "terraform"
-    contact           = "ma@mismail.xyz"
-    heritage          = "repo address"
-  }
-}
+  tags =  merge(var.tags, map("Name", "S3 Remote Terraform State Store")
+
 
 resource "aws_s3_bucket_public_access_block" "tfstate" {
   bucket = aws_s3_bucket.tfstate.bucket

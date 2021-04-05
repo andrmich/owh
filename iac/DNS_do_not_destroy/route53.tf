@@ -1,5 +1,5 @@
 resource "aws_route53_zone" "main" {
-  name = "shiny-infra.xyz"
+  name = var.zone_name
 
   lifecycle {
     prevent_destroy = true
