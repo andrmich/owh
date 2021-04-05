@@ -61,7 +61,7 @@ resource "aws_instance" "bastion" {
     volume_size = 20
   }
 
-  tags =  merge(var.tags, map("Instance", "Bastion"))
+  tags = merge(var.tags, map("Instance", "Bastion"))
 
   lifecycle {
     ignore_changes = [ami]

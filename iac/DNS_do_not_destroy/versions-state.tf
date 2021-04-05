@@ -14,7 +14,7 @@ terraform {
 
 
   backend "s3" {
-    bucket         = "aisim-tf-state"  # <---- CHANGE HERE
+    bucket         = "aisim-tf-state" # <---- CHANGE HERE
     key            = "DNS"
     region         = "eu-central-1"
     dynamodb_table = "terraform-state-locking"

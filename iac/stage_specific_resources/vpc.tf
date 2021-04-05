@@ -13,7 +13,7 @@ locals {
     name     = "private-${az}"
     new_bits = 5
   }]
-  _networks = flatten([local._public_networks, local._private_networks,])
+  _networks = flatten([local._public_networks, local._private_networks, ])
 }
 
 module "subnet_addrs" {
@@ -38,14 +38,14 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 2.77.0"
 
-  name             = var.tags.Topic
-  cidr             = var.vpc_cidr
-  azs              = local.azs
-  public_subnets   = local.public_subnets
-  private_subnets  = local.private_subnets
+  name            = var.tags.Topic
+  cidr            = var.vpc_cidr
+  azs             = local.azs
+  public_subnets  = local.public_subnets
+  private_subnets = local.private_subnets
 
-  enable_dns_hostnames         = true
-  enable_dns_support           = true
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   enable_nat_gateway = true
   enable_vpn_gateway = false

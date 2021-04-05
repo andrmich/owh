@@ -27,18 +27,18 @@ variable "bastion_ssh_key" {
 
 variable "enable_s3_endpoint" {
   description = "Should be true if you want to provision an S3 endpoint to the VPC"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "tags" {
   description = "Tags to apply to resources created by VPC module"
   type        = map(string)
   default = {
-    Topic = "simple-vm"
-    Environment = "np"
+    Topic              = "simple-vm"
+    Environment        = "np"
     ResourceMsanagedBy = "terraform"
-    Contact           = "ma@mismail.xyz"
-    Heritage          = "repo address"
+    Contact            = "ma@mismail.xyz"
+    Heritage           = "repo address"
   }
 }

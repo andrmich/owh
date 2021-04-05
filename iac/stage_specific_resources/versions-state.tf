@@ -1,5 +1,5 @@
 provider "aws" {
-  region         = "eu-central-1"
+  region = "eu-central-1"
 }
 
 terraform {
@@ -14,7 +14,7 @@ terraform {
 
 
   backend "s3" {
-    bucket         = "aisim-tf-state"
+    bucket         = "aisim-tf-state" # <---- CHANGE HERE
     key            = "stage-specific-vpc-bastion"
     region         = "eu-central-1" # Bucket region, not deployment region
     dynamodb_table = "terraform-state-locking"
