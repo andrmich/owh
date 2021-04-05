@@ -25,11 +25,11 @@ Overengineered way of setting up a static webpage hosting to make the best use o
 
 I was tasked with: 
 
-- creating a LinuxVM that is only accessible via ssh keys
-- running a web server which will serve a static page displaying "Hello my name is <yourname>". It should use scripts to connect to said machine and deploy a simple website there
-- creating a monitoring script, that verifies whether the site is up: [![Website simple-vm.shiny-infra.xyz](https://img.shields.io/website-up-down-green-red/https/simple-vm.shiny-infra.xyz.svg)](https://simple-vm.shiny-infra.xyz/)
+- creating a Linux VM that is only accessible via ssh keys
+- running a web server that will serve a static page displaying "Hello my name is <yourname>". It should use scripts to connect to the said machine and deploy a simple website there
+- creating a monitoring script that verifies whether the site is up: [![Website simple-vm.shiny-infra.xyz](https://img.shields.io/website-up-down-green-red/https/simple-vm.shiny-infra.xyz.svg)](https://simple-vm.shiny-infra.xyz/)
 
-I decided to have some fun with it and create a "production ready" solution.
+I decided to have some fun with it and create a "production-ready" solution.
 
 # Solution
 
@@ -37,16 +37,16 @@ I decided to have some fun with it and create a "production ready" solution.
 
 [(Back to top)](#table-of-contents)
 
-The website is served by **nginx** web server, running in **docker** container, on the **Simple VM** virtual machine.
+The website is served by **nginx** web server, running in a **docker** container on the **Simple VM** virtual machine.
 
 Simple VM is an **AWS EC2** instance.
 It is created in a **private subnet**, so it cannot be accessed directly from the Internet.
 
 User access (HTTP/HTTPS) is handled by **AWS Application Load Balancer**.
-It terminates TLS using certificate generated with AWS Certificate Manager (ACM).
+It terminates TLS using a certificate generated with AWS Certificate Manager (ACM).
 
 Management access to Simple VM is possible with SSH, using the **bastion** host.
-It is used by **GitHub Actions** to deploy new versions of the application.
+**GitHub Actions** uses it to deploy new versions of the application.
 
 The entire infrastructure for the project is contained in this repository, in **terraform** files.
 
@@ -63,13 +63,13 @@ It uses aws_ec2 **dynamic inventory** to get VM's IP address.
 ## Monitoring
 
 For a simple health check there's the `monitoring_script.sh`.
-It performs a HTTP GET request and if the result differs from the expected value, it sends an email to defined recipients.
+It performs an HTTP GET request, and if the result differs from the expected value, it sends an email to defined recipients.
 
 The script can be run with `cron`.
 
-The biggest issue with this approach is the fact that the script doesn't save the previous state and will continue to send emails again and again, with each run (as long as the website is down).
+The biggest issue with this approach is that the script doesn't save the previous state and will continue to send emails repeatedly, with each run (as long as the website is down).
 
-I plan to add **Prometheus** with **Alertmanager** and **Blackbox exporter** to this project, to handle monitoring and alerting properly. 
+I plan to add **Prometheus** with **Alertmanager** and **Blackbox exporter** to this project to handle monitoring and alerting properly. 
 
 Additionally, the 
 [![Website simple-vm.shiny-infra.xyz](https://img.shields.io/website-up-down-green-red/https/simple-vm.shiny-infra.xyz.svg)](https://simple-vm.shiny-infra.xyz/)
@@ -96,7 +96,7 @@ Setting up the project is partially automated with GitHub Actions.
 
 S3 bucket and DynamoDB table to store terraform state.
 
-This step is a bit complex, due to the way how terraform handles state by default.
+This step is a bit complex due to the way how terraform handles state by default.
 
 1. `cd iac/terraform_boilerplate`
 
@@ -106,7 +106,7 @@ This step is a bit complex, due to the way how terraform handles state by defaul
 
 4. Edit `state.tf` file.
    - Change the bucket name in the marked line to the one set in `terraform.tfvars`
-   - Comment (with `#`) the marked lines out. This is necessary, because the bucket does not exist yet.
+   - Comment (with `#`) the marked lines out. This is necessary because the bucket does not exist yet.
 
 5. `terraform init && terraform apply`
 
@@ -117,9 +117,9 @@ This step is a bit complex, due to the way how terraform handles state by defaul
 
 #### II. DNS zone
 
-This step creates Route53 hosted zone. 
-It's called "do not destroy", because this resource does not generate any costs and recreating it might force you to make changes in DNS setup outside AWS 
-(since new hosted zone might get different nameservers).
+This step creates q Route53 hosted zone. 
+It's called "do not destroy" because this resource does not generate any costs, and recreating it might force you to make changes in DNS setup outside AWS 
+(since the new hosted zone might get different nameservers).
 
 1. `cd iac/DNS_do_not_destroy`
 
@@ -134,9 +134,9 @@ It's called "do not destroy", because this resource does not generate any costs 
 
 Set up your domain's DNS NS records according to [this guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/migrate-dns-domain-inactive.html).
 
-#### III. Stage specific resources
+#### III. Stage-specific resources
 
-This step creates the VPC, ALB and the bastion host.
+This step creates the VPC, ALB, and the bastion host.
 
 1. `cd iac/stage_specific_resources`
 
@@ -151,7 +151,7 @@ This step creates the VPC, ALB and the bastion host.
 
 ### GitHub Actions
 
-Steps below are executed in GitHub Actions pipeline.
+The steps below are executed in the GitHub Actions pipeline.
 However, if you wish to run it manually (without forking the repo and setting up your own pipeline), see the instructions below.
 
 #### IV. The VM itself
